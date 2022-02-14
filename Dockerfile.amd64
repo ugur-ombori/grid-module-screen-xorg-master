@@ -1,0 +1,30 @@
+FROM omborigridregistry.azurecr.io/ombori.screen-xorg-base:220104-1-amd64
+
+COPY ./certificates/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
+RUN mkdir /app
+WORKDIR /app
+
+COPY ./package.json /app
+COPY ./yarn.lock /app
+
+RUN yarn
+
+RUN useradd -g adm -G cdrom,sudo,render,video xorg
+RUN mkdir -p /home/xorg && chown -R xorg /app && chown -R xorg /home/xorg
+
+COPY static /app
+COPY dist /app
+
+COPY ./base/xinit /app
+COPY ./base/xserverrc /etc/X11/xinit/xserverrc
+COPY ./electron.cjs /app
+
+ENV TOUCH_DEVICE true
+ENV NODE_OPTIONS "--tls-min-v1.0"
+
+ENV TERM xterm
+ENV PULSE_RUNTIME_PATH "/run/pulse"
+ENV DISPLAY=":0"
+CMD ["yarn", "supervisor"]

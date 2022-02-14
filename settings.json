@@ -1,0 +1,39 @@
+{
+  "version": "1.1",
+  "type": "docker",
+  "status": "running",
+  "restartPolicy": "always",
+  "settings": {
+    "createOptions": {
+      "HostConfig": {
+        "ShmSize": 2147483648,
+        "Memory": 4294967296,
+        "Privileged": true,
+        "PortBindings": {
+          "1234/tcp": [
+            {
+              "HostPort": "1234"
+            }
+          ]
+        },
+        "Binds": [
+          "browserlocal:/root/.local",
+          "browsercache:/home/xorg/browsercache",
+          "/run/dbus:/run/dbus",
+          "/dev/input:/dev/input",
+          "/run/udev/data:/run/udev/data",
+          "/run/systemd:/run/systemd"
+        ]
+      },
+      "NetworkingConfig": {
+        "EndpointsConfig": {
+          "azure-iot-edge": {
+            "Aliases": [
+              "GdmAgent"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

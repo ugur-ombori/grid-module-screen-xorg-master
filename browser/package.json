@@ -1,0 +1,30 @@
+{
+  "name": "browser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "yarn build && electron ./dist",
+    "prod": "electron --no-sandbox --kiosk --use-gl=desktop --enable-accelerated-video-decode --enable-gpu-rasterization --enable-feature=VaapiVideoDecoder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@ombori/ts-schema": "^2.39.3",
+    "@types/get-image-colors": "^2.0.0",
+    "@types/ws": "^7.4.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@ombori/ga-module": "^2.84.2",
+    "azure-storage": "^2.10.5",
+    "electron": "^16.0.2",
+    "get-image-colors": "^4.0.0",
+    "node-fetch": "^3.1.0",
+    "uuid": "^8.3.2",
+    "ws": "^7.4.4"
+  }
+}

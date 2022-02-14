@@ -1,0 +1,56 @@
+#!/bin/bash
+
+xset -dpms
+xset s off
+xset s noblank
+
+sleep 10
+
+if [ -z "$SCREEN_ROTATION" ]
+then
+  echo "SCREEN_ROTATION not set"
+else
+  xrandr -o $SCREEN_ROTATION
+
+  TOUCH_DEVICE=`xinput list | grep -i "touch" | grep -i "pointer" | sed s/id=.*// | sed s/[^\ 0-9a-z_A-Z\.]//g | head -n 1 | xargs`;
+  echo TOUCH_DEVICE
+  echo $TOUCH_DEVICE
+  echo $SCREEN_ROTATION
+
+  if [ -n "$TOUCH_DEVICE" ]
+  then
+
+    if [ "$SCREEN_ROTATION" == "left" ]
+    then
+      xinput set-prop "$TOUCH_DEVICE" "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+    elif [ "$SCREEN_ROTATION" == "right" ]
+    then
+      xinput set-prop "$TOUCH_DEVICE" "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
+    elif [ "$SCREEN_ROTATION" == "inverted" ]
+    then
+      xinput set-prop "$TOUCH_DEVICE" "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
+    fi
+  fi
+fi
+
+if [ -z "$SCREEN_XINIT" ]
+then
+  echo "SCREEN_XINIT not set"
+else
+  eval "$SCREEN_XINIT"
+fi
+
+# This path looks wrong so checking if file exists before attempting to run it
+[ -f ../displaycheck.js ] && node ../displaycheck.js &
+
+i3 &
+
+cd /app
+rm -rf /home/xorg/.config/Electron
+mkdir -p /home/xorg/.config
+mkdir -p /home/xorg/browsercache/Electron
+ln -s /home/xorg/browsercache/Electron /home/xorg/.config/Electron
+chown -R xorg /home/xorg
+exec sudo -H -u xorg --preserve-env=activeUrl bash -c 'yarn prod'
+# exec yarn prod
+

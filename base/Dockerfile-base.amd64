@@ -1,0 +1,92 @@
+FROM ubuntu:21.10
+
+ENV MANUAL_BUMP 20211126-1
+
+ENV INITSYSTEM on
+ENV DEBIAN_FRONTEND noninteractive
+ENV TERM dumb
+
+# Install other apt deps
+
+RUN echo "deb http://archive.canonical.com/ubuntu impish partner" >> /etc/apt/sources.list && cat /etc/apt/sources.list
+
+RUN apt-get update -y && \
+  apt-get install -y  \
+  fonts-noto-color-emoji \
+  xserver-xorg-core \
+  xserver-xorg-input-all \
+  xserver-xorg-video-fbdev \
+  xserver-xorg-video-intel \
+  xserver-xorg-input-multitouch \
+  xorg \
+  xli \
+  libgles2-mesa \
+  libva-glx2 \
+  libva-x11-2 \
+  vainfo \
+  ubuntu-restricted-addons \
+  chromium-codecs-ffmpeg-extra \
+  libgl1-mesa-glx \
+  mesa-utils \
+  mesa-utils-extra \
+  libxcb-image0 \
+  imagemagick \
+  i3 \
+  htop \
+  xdg-utils \
+  v4l-utils \
+  pciutils \
+  alsa-utils \
+  dkms \
+  libxss1 \
+  libsmbclient \
+  libssh-4 \
+  fbset \
+  pulseaudio \
+  pavucontrol \
+  pulseaudio-utils \
+  ffmpeg \
+  openssh-client \
+  sox \
+  xbacklight \
+  libsox-fmt-all \
+  vim \
+  unzip \
+  tlp \
+  tlp-rdw \
+  acpi-call-dkms \
+  x11vnc \
+  xdotool \
+  fswebcam \
+  gstreamer1.0-vaapi \
+  libigdgmm11 \
+  libvdpau-va-gl1 \
+  i965-va-driver-shaders \
+  intel-media-va-driver-non-free \
+  vdpauinfo \
+  x11-apps xterm ubuntu-restricted-extras \
+  libevdev2 \
+  libevdev-tools \
+  mir-platform-input-evdev8 \
+  xserver-xorg-input-evdev \
+  libnss3 \
+  psmisc \
+  && apt-get remove -y cmdtest
+
+RUN wget -q -O - https://deb.nodesource.com/setup_14.x | bash - && apt-get install -y nodejs
+RUN rm -rf /var/lib/apt/lists/*
+
+COPY ./xserverrc /etc/X11/xinit/xserverrc
+
+# Fix issue with artifacts on scroll and rapid motion
+RUN mkdir -p /etc/X11/xorg.conf.d && echo 'Section "Device"\n Identifier "Intel Graphics"\n Driver "Intel"\n Option "AccelMethod" "sna"\n Option "TearFree" "true"\nEndSection' | tee /etc/X11/xorg.conf.d/20-intel.conf
+
+RUN rm /usr/share/dbus-1/system-services/org.freedesktop.login1.service
+
+RUN npm i -g --unsafe-perm yarn
+
+COPY ./conf/analog-input-internal-mic.conf /usr/share/pulseaudio/alsa-mixer/paths/analog-input-internal-mic.conf
+COPY ./conf/analog-input-mic.conf /usr/share/pulseaudio/alsa-mixer/paths/analog-input-mic.conf
+COPY ./conf/default.pa /etc/pulse/default.pa
+COPY ./conf/i3 /root/.config/i3/config
+
