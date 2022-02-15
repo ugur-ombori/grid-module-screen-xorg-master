@@ -21,7 +21,7 @@ export type Settings = {
    * @title Screen orientation
    * @default "landscape"
    */
-  screen_orientation: 'landscape' | 'portrait' | 'portrait-left';
+  screen_orientation: 'landscape' | 'portrait' | 'portrait-left' | 'landscape-inverted';
 
   /**
    * @title Enable on-screen keyboard

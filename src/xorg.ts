@@ -17,6 +17,7 @@ async function setupXorgConfig(args = {}) {
   console.log('xonfig done', {xorgConfig});
 }
 
+
 const startOrRestartXorg = () => {
   console.log('startOrRestartXorg', { xorgConfig });
   let SCREEN_ROTATION;
@@ -26,6 +27,12 @@ const startOrRestartXorg = () => {
       break;
     case 'portrait-left':
       SCREEN_ROTATION='left';
+      break;
+    case 'landscape':
+      SCREEN_ROTATION='normal';
+      break;
+    case 'landscape-inverted':
+      SCREEN_ROTATION='inverted';
       break;
   }
   try {
