@@ -12,28 +12,52 @@ then
 else
   xrandr -o $SCREEN_ROTATION
 
-  TOUCH_DEVICE=`xinput list | grep -i "touch" | grep -i "pointer" | sed s/id=.*// | sed s/[^\ 0-9a-z_A-Z\.]//g | head -n 1 | xargs`;
-  echo TOUCH_DEVICE
-  echo $TOUCH_DEVICE
+  SEARCH="Touch"
+  if [ "$SEARCH" = "" ]; then 
+      exit 1
+  fi
+  echo $SEARCH
+  ids=$(xinput --list | awk -v search="$SEARCH" \
+      '$0 ~ search {match($0, /id=[0-9]+/);\
+                    if (RSTART) \
+                      print substr($0, RSTART+3, RLENGTH-3)\
+                  }'\
+      )
+
+  echo $ids
   echo $SCREEN_ROTATION
 
-  if [ -n "$TOUCH_DEVICE" ]
-  then
+  echo TEST-EDDIT---
+  echo `xinput list`
+  echo TEST-EDDIT---
 
-    if [ "$SCREEN_ROTATION" == "left" ]
+  echo "Active Touch IDs:"  
+  echo $ids
+  cnt=0
+  for i in $ids
+  do
+    if (( $cnt<2 )) 
     then
-      xinput set-prop "$TOUCH_DEVICE" "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
-    elif [ "$SCREEN_ROTATION" == "right" ]
-    then
-      xinput set-prop "$TOUCH_DEVICE" "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
-    elif [ "$SCREEN_ROTATION" == "inverted" ]
-    then
-      xinput set-prop "$TOUCH_DEVICE" "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
-    elif [ "$SCREEN_ROTATION" == "normal" ]
-    then
-      xinput set-prop "$TOUCH_DEVICE" "Coordinate Transformation Matrix" 0 0 0 0 0 0 0 0 0
+      cnt=$((cnt+1))
+      if [ "$SCREEN_ROTATION" == "left" ]
+      then                                                                 
+        xinput set-prop $i "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+        echo $i
+      elif [ "$SCREEN_ROTATION" == "right" ]
+      then                                                                
+        xinput set-prop $i "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
+        echo $i
+      elif [ "$SCREEN_ROTATION" == "inverted" ]                           
+      then                                                                 
+        xinput set-prop $i "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
+        echo $i
+      elif [ "$SCREEN_ROTATION" == "normal" ]
+      then                                                                 
+        xinput set-prop $i "Coordinate Transformation Matrix" 0 0 0 0 0 0 0 0 0
+        echo $i
+      fi
     fi
-  fi
+  done
 fi
 
 if [ -z "$SCREEN_XINIT" ]

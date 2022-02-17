@@ -1,6 +1,6 @@
 {
   "name": "ombori.screen",
-  "version": "0.0.8",
+  "version": "0.0.12",
   "description": "Screen",
   "container-registry": "omborigridregistry.azurecr.io",
   "license": "UNLICENSED",
